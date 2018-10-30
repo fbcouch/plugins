@@ -68,7 +68,8 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         String signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
-        delegate.init(result, signInOption, requestedScopes, hostedDomain);
+        String serverClientId = call.argument("serverClientId");
+        delegate.init(result, signInOption, requestedScopes, hostedDomain, serverClientId);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -115,7 +116,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain);
+        Result result,
+        String signInOption,
+        List<String> requestedScopes,
+        String hostedDomain,
+        String serverClientId);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -212,7 +217,11 @@ public class GoogleSignInPlugin implements MethodCallHandler {
      */
     @Override
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
+        Result result,
+        String signInOption,
+        List<String> requestedScopes,
+        String hostedDomain,
+        String serverClientId) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
@@ -247,6 +256,10 @@ public class GoogleSignInPlugin implements MethodCallHandler {
         }
         if (!Strings.isNullOrEmpty(hostedDomain)) {
           optionsBuilder.setHostedDomain(hostedDomain);
+        }
+        if (!Strings.isNullOrEmpty(serverClientId)) {
+          optionsBuilder.requestServerAuthCode(serverClientId);
+          optionsBuilder.requestIdToken(serverClientId);
         }
 
         this.requestedScopes = requestedScopes;
@@ -363,6 +376,7 @@ public class GoogleSignInPlugin implements MethodCallHandler {
       response.put("id", account.getId());
       response.put("idToken", account.getIdToken());
       response.put("displayName", account.getDisplayName());
+      response.put("serverAuthCode", account.getServerAuthCode());
       if (account.getPhotoUrl() != null) {
         response.put("photoUrl", account.getPhotoUrl().toString());
       }
