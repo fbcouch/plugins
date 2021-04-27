@@ -72,8 +72,8 @@ class GoogleSignInUserData {
   String? serverAuthCode;
 
   @override
-  int get hashCode =>
-      hashObjects(<String?>[displayName, email, id, photoUrl, idToken, serverAuthCode]);
+  int get hashCode => hashObjects(
+      <String?>[displayName, email, id, photoUrl, idToken, serverAuthCode]);
 
   @override
   bool operator ==(dynamic other) {
